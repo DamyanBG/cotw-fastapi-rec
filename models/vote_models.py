@@ -13,7 +13,7 @@ class VoteBase(BaseModel):
     cat_id: str
 
 
-class VoteCreate(BaseModel):
+class VoteCreate(VoteBase):
     pass 
 
 

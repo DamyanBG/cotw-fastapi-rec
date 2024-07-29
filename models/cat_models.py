@@ -45,3 +45,11 @@ class CurrentRoundCatBase(BaseCatModel):
 
 class CurrentRoundCatCreate(CurrentRoundCatBase):
     pass
+
+
+class CurrentRoundCat(CurrentRoundCatBase):
+    id: str
+
+
+class CurrentRoundCatWithImage(CurrentRoundCat, CatImageURL):
+    pass

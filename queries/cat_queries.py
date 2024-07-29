@@ -1,9 +1,10 @@
 from asyncio import gather
 from typing import Optional
 from google.cloud.firestore import FieldFilter, Increment
+from google.cloud.exceptions import NotFound
 
 from db import db
-from models.cat_models import NextRoundCatCreate, NextRoundCat, CurrentRoundCatCreate
+from models.cat_models import NextRoundCatCreate, NextRoundCat, CurrentRoundCatCreate, CurrentRoundCat
 
 nrc_ref = db.collection("NextRoundCats")
 crc_ref = db.collection("CurrentRoundCats")
@@ -62,3 +63,21 @@ async def add_like(cat_id: str) -> None:
 async def add_dislike(cat_id: str) -> None:
     cat_doc_ref = crc_ref.document(cat_id)
     await cat_doc_ref.update({"dislikes": Increment(1), "votes": Increment(1)})
+
+
+async def select_not_voted_cat(voted_cats_ids: list[str]) -> CurrentRoundCat:
+    print(voted_cats_ids)
+    all_cats_docs = [doc async for doc in crc_ref.stream()]
+    all_cats = [
+        CurrentRoundCat(id=cat_doc.id, **cat_doc.to_dict())
+        for cat_doc in all_cats_docs
+    ]
+    filtered_cats = [cat for cat in all_cats if cat.id not in voted_cats_ids]
+
+    if not filtered_cats:
+        raise NotFound('No cat for vote!')
+    
+    sorted_cats = sorted(filtered_cats, key=lambda cat: cat.votes)
+    cat_for_vote = sorted_cats[0]
+
+    return cat_for_vote

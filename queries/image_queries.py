@@ -13,3 +13,9 @@ async def insert_image(image_data: ImageCreate) -> Image:
     image = Image(**image_data_dict)
     return image
     
+
+async def select_image_file_name_by_id(image_id: str) -> str:
+    image_doc = await image_ref.document(image_id).get()
+    image_dict = image_doc.to_dict()
+    file_name = image_dict["file_name"]
+    return file_name

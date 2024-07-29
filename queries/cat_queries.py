@@ -1,6 +1,6 @@
 from asyncio import gather
 from typing import Optional
-from google.cloud.firestore import FieldFilter
+from google.cloud.firestore import FieldFilter, Increment
 
 from db import db
 from models.cat_models import NextRoundCatCreate, NextRoundCat, CurrentRoundCatCreate
@@ -52,3 +52,13 @@ async def insert_current_round_cats(cats: list[CurrentRoundCatCreate]) -> None:
         new_cat_ref.set(cat_dict) for cat_dict, new_cat_ref in zip(cats_dicts, new_cats_refs)
     ]
     await gather(*insert_operations)
+
+
+async def add_like(cat_id: str) -> None:
+    cat_doc_ref = crc_ref.document(cat_id)
+    await cat_doc_ref.update({"likes": Increment(1), "votes": Increment(1)})
+
+
+async def add_dislike(cat_id: str) -> None:
+    cat_doc_ref = crc_ref.document(cat_id)
+    await cat_doc_ref.update({"dislikes": Increment(1), "votes": Increment(1)})

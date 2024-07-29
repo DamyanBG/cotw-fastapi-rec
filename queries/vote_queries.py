@@ -1,7 +1,7 @@
 from typing import Optional
 from google.cloud.firestore import FieldFilter, And
 
-from db import db 
+from db import db
 from models.vote_models import VoteCreate, Vote
 
 
@@ -25,7 +25,7 @@ async def select_vote_by_cat_and_user(cat_id: str, user_id: str) -> Optional[Vot
     docs = [doc async for doc in query.stream()]
     if not docs:
         return None
-    
+
     vote_doc = docs[0]
     vote = Vote(id=vote_doc.id, **vote_doc.to_dict())
     return vote

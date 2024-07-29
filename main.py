@@ -11,11 +11,10 @@ from cron_jobs.round_end import round_end_logic
 origins = ["http://localhost:3000"]
 
 
-
 ascheduler = AsyncIOScheduler()
 
 
-ascheduler.add_job(round_end_logic, CronTrigger(day_of_week='mon', hour=0, minute=30))
+ascheduler.add_job(round_end_logic, CronTrigger(day_of_week="mon", hour=0, minute=30))
 
 
 @asynccontextmanager

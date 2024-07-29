@@ -11,7 +11,9 @@ from config import BUCKET_NAME
 client = Client(credentials=credentials)
 
 
-def upload_bytes_image(image_bytes: bytes, image_extension: str = ".webp", content_type: str = "image/webp") -> str:
+def upload_bytes_image(
+    image_bytes: bytes, image_extension: str = ".webp", content_type: str = "image/webp"
+) -> str:
     file_name = f"{uuid4()}{image_extension}"
 
     with TemporaryDirectory() as temp_dir:
@@ -33,7 +35,9 @@ def generate_signed_url(file_name, expiration_hours=1):
         blob = Blob(file_name, bucket)
 
         expiration_time = datetime.now(UTC) + timedelta(hours=expiration_hours)
-        signed_url = blob.generate_signed_url(version="v4", expiration=expiration_time, method="GET")
+        signed_url = blob.generate_signed_url(
+            version="v4", expiration=expiration_time, method="GET"
+        )
 
         return signed_url
     except Exception as e:

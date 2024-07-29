@@ -20,6 +20,6 @@ def compress_image_to_webp(base64_image: str) -> bytes:
             image_data = buffer.read()
 
         return image_data
-    
+
     except (Error, Image.UnidentifiedImageError) as e:
         raise ValueError("Invalid image data or format") from e

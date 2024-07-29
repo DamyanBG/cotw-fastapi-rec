@@ -12,7 +12,7 @@ async def insert_image(image_data: ImageCreate) -> Image:
     image_data_dict["id"] = new_image_ref.id
     image = Image(**image_data_dict)
     return image
-    
+
 
 async def select_image_file_name_by_id(image_id: str) -> str:
     image_doc = await image_ref.document(image_id).get()

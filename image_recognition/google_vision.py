@@ -16,7 +16,9 @@ def check_is_safe_image(image: Image, client: ImageAnnotatorClient) -> bool:
         "VERY_LIKELY",
     )
 
-    if likelihood_name[safe.adult] in ["LIKELY", "VERY_LIKELY"] or likelihood_name[safe.violence] in ["LIKELY", "VERY_LIKELY"]:
+    if likelihood_name[safe.adult] in ["LIKELY", "VERY_LIKELY"] or likelihood_name[
+        safe.violence
+    ] in ["LIKELY", "VERY_LIKELY"]:
         return False
     return True
 
@@ -27,7 +29,7 @@ def check_contains_cat(image: Image, client: ImageAnnotatorClient) -> bool:
     for label in labels:
         if "cat" in label.description.lower():
             return True
-        
+
     return False
 
 

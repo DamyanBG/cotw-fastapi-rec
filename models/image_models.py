@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class ImageBase(BaseModel):
-    file_name: str 
+    file_name: str
 
 
 class ImageUrl:
@@ -22,4 +22,4 @@ class Image(ImageBase):
 
 
 class ImageWithUrl(Image, ImageUrl):
-    pass 
+    pass

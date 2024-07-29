@@ -14,8 +14,8 @@ class VoteBase(BaseModel):
 
 
 class VoteCreate(VoteBase):
-    pass 
+    pass
 
 
 class Vote(VoteBase):
-    id: str 
+    id: str

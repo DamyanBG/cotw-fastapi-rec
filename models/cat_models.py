@@ -53,3 +53,19 @@ class CurrentRoundCat(CurrentRoundCatBase):
 
 class CurrentRoundCatWithImage(CurrentRoundCat, CatImageURL):
     pass
+
+
+class CatOfTheWeekBase(BaseCatModel):
+    likes: int
+    dislikes: int
+    votes: int
+    week_number: int
+    year: int
+
+
+class CatOfTheWeekCreate(CatOfTheWeekBase):
+    pass
+
+
+class CatOfTheWeek(CatOfTheWeekBase):
+    id: str

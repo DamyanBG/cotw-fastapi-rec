@@ -27,5 +27,5 @@ async def select_user_by_email(email: str) -> Optional[User]:
         user_data["id"] = user_doc.id
         user = User(**user_data)
         return user
-    
+
     return None

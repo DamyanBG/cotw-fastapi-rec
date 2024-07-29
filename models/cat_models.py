@@ -35,3 +35,13 @@ class NextRoundCat(NextRoundCatBase):
 
 class NextRoundCatWithImage(NextRoundCat, CatImageURL):
     pass
+
+
+class CurrentRoundCatBase(BaseCatModel):
+    likes: int = 0
+    dislikes: int = 0
+    votes: int = 0
+
+
+class CurrentRoundCatCreate(CurrentRoundCatBase):
+    pass

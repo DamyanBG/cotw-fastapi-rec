@@ -9,9 +9,10 @@ from models.cat_models import (
     NextRoundCatCreate,
     NextRoundCatWithImage,
     CurrentRoundCatWithImage,
+    CatOfTheWeekWithImage,
 )
 from models.user_models import UserId
-from queries.cat_queries import insert_nrc, select_user_nrc, select_not_voted_cat
+from queries.cat_queries import insert_nrc, select_user_nrc, select_not_voted_cat, select_cat_of_the_week
 from queries.image_queries import select_image_file_name_by_id
 from queries.vote_queries import select_voted_cats_ids
 from storage.google_cloud_storage import generate_signed_url
@@ -72,3 +73,19 @@ async def get_cat_for_vote(user_id: UserId = Depends(get_current_user_id)):
     )
 
     return cat_for_vote_with_image
+
+
+@cats_router.get("/cat-of-the-week", response_model=CatOfTheWeekWithImage)
+async def get_cat_of_the_week():
+    try:
+        cat_of_the_week = await select_cat_of_the_week()
+    except NotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.message)
+    
+    cat_image_file_name = await select_image_file_name_by_id(cat_of_the_week.photo_id)
+    cat_image_url = generate_signed_url(cat_image_file_name)
+    cotw_with_image = CatOfTheWeekWithImage(
+        image_url=cat_image_url, **cat_of_the_week.model_dump()
+    )
+    
+    return cotw_with_image

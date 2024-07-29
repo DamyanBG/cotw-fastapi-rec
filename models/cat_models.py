@@ -69,3 +69,7 @@ class CatOfTheWeekCreate(CatOfTheWeekBase):
 
 class CatOfTheWeek(CatOfTheWeekBase):
     id: str
+
+
+class CatOfTheWeekWithImage(CatOfTheWeek, CatImageURL):
+    pass

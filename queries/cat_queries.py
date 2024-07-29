@@ -1,6 +1,7 @@
 from asyncio import gather
+from datetime import date
 from typing import Optional
-from google.cloud.firestore import FieldFilter, Increment
+from google.cloud.firestore import FieldFilter, Increment, And
 from google.cloud.exceptions import NotFound
 
 from db import db
@@ -10,6 +11,7 @@ from models.cat_models import (
     CurrentRoundCatCreate,
     CurrentRoundCat,
     CatOfTheWeekCreate,
+    CatOfTheWeek,
 )
 
 nrc_ref = db.collection("NextRoundCats")
@@ -106,3 +108,25 @@ async def insert_cat_of_the_week(cat_data: CatOfTheWeekCreate) -> None:
     cotw_dict = cat_data.model_dump()
     new_cotw_ref = cat_of_the_week_ref.document()
     await new_cotw_ref.set(cotw_dict)
+
+
+async def select_cat_of_the_week() -> CatOfTheWeek:
+    current_date = date.today()
+    iso_calendar = current_date.isocalendar()
+    week_number = iso_calendar.week
+    year = iso_calendar.year
+
+    week_filter = FieldFilter("week_number", "==", week_number)
+    year_filter = FieldFilter("year", "==", year)
+    composite_filter = And(filters=[week_filter, year_filter])
+
+    query = cat_of_the_week_ref.where(filter=composite_filter)
+    docs = [doc async for doc in query.stream()]
+    if not docs:
+        raise NotFound("No cat of the week for the current week!")
+    
+    cat_doc = docs[0]
+    cat_of_the_week = CatOfTheWeek(
+        id=cat_doc.id, **cat_doc.to_dict()
+    )
+    return cat_of_the_week

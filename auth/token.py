@@ -5,6 +5,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 from config import JWT_KEY
 from models.user_models import User, UserId
+from queries.user_queries import check_user_exists
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_DAYS = 30
@@ -21,11 +22,13 @@ def create_access_token(user: User) -> str:
     return encoded_jwt
 
 
-def verify_token(token: str, credentials_exception: HTTPException) -> UserId:
+async def verify_token(token: str, credentials_exception: HTTPException) -> UserId:
     try:
         payload = jwt.decode(token, JWT_KEY, algorithms=[ALGORITHM])
         user_id_str = payload.get("sub")
         if not user_id_str:
+            raise credentials_exception
+        if not await check_user_exists(user_id_str):
             raise credentials_exception
     except jwt.PyJWTError:
         raise credentials_exception
@@ -33,11 +36,11 @@ def verify_token(token: str, credentials_exception: HTTPException) -> UserId:
     return user_id
 
 
-def get_current_user_id(token: str = Depends(oauth2_scheme)) -> UserId:
+async def get_current_user_id(token: str = Depends(oauth2_scheme)) -> UserId:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"}
     )
-    return verify_token(token, credentials_exception)
+    return await verify_token(token, credentials_exception)
     

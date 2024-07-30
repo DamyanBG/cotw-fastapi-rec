@@ -2,7 +2,7 @@ from typing import Optional
 from google.cloud.firestore import FieldFilter
 
 from db import db
-from models.user_models import UserCreate, User
+from models.user_models import UserCreate, User, UserUpdate
 
 
 user_ref = db.collection("Users")
@@ -29,3 +29,34 @@ async def select_user_by_email(email: str) -> Optional[User]:
         return user
 
     return None
+
+
+async def delete_user(user_id: str) -> None:
+    user_doc_ref = user_ref.document(user_id)
+    await user_doc_ref.delete()
+
+
+async def check_user_exists(user_id: str) -> bool:
+    user_doc_ref = user_ref.document(user_id)
+    user_doc = await user_doc_ref.get()
+    user_exists = user_doc.exists
+    return user_exists
+
+
+async def select_user_by_id(user_id: str) -> User:
+    user_doc_ref = user_ref.document(user_id)
+    user_doc = await user_doc_ref.get()
+    user = User(
+        id=user_doc.id, **user_doc.to_dict()
+    )
+    return user
+
+
+async def update_user(update_data: UserUpdate, user_id: str) -> User:
+    user_doc_ref = user_ref.document(user_id)
+    update_data_dict = update_data.model_dump()
+    await user_doc_ref.update(update_data_dict)
+    updated_user = User(
+        id=user_id, **update_data_dict
+    )
+    return updated_user

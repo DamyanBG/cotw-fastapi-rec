@@ -34,3 +34,7 @@ class UserId(BaseModel):
 
 class User(UserBase, UserId):
     pass
+
+
+class UserUpdate(UserBase):
+    pass

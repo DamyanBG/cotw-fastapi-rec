@@ -1,0 +1,8 @@
+apscheduler==3.10.4
+google-cloud-firestore==2.16.1
+google-cloud-vision==3.7.3
+google-cloud-storage==2.18.0
+fastapi==0.111.1
+pyjwt==2.8.0
+pillow==10.4.0
+werkzeug==3.0.3

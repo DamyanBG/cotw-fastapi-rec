@@ -6,3 +6,4 @@ fastapi==0.111.1
 pyjwt==2.8.0
 pillow==10.4.0
 werkzeug==3.0.3
+gunicorn==22.0.0

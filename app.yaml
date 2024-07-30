@@ -1,0 +1,5 @@
+runtime: python312
+
+instance_class: F1
+
+entrypoint: gunicorn --workers 1 --worker-class uvicorn.workers.UvicornWorker main:app 

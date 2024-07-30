@@ -8,7 +8,7 @@ from routers.routes import api_router
 from cron_jobs.round_end import round_end_logic
 from cron_jobs.cleanup_images import cleanup_unused_images
 
-origins = ["http://localhost:3000"]
+origins = ["*"]
 
 
 ascheduler = AsyncIOScheduler()

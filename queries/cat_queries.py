@@ -8,6 +8,7 @@ from db import db
 from models.cat_models import (
     NextRoundCatCreate,
     NextRoundCat,
+    NextRoundCatUpdate,
     CurrentRoundCatCreate,
     CurrentRoundCat,
     CatOfTheWeekCreate,
@@ -49,6 +50,35 @@ async def select_all_nr_cats() -> list[NextRoundCat]:
 async def delete_all_nr_cats(cats: list[NextRoundCat]) -> None:
     delete_tasks = [nrc_ref.document(cat.id).delete() for cat in cats]
     await gather(*delete_tasks)
+
+
+async def delete_nr_cat(user_id: str) -> None:
+    user_id_filter = FieldFilter("user_id", "==", user_id)
+    query = nrc_ref.where(filter=user_id_filter)
+    docs = [doc async for doc in query.stream()]
+
+    if not docs:
+        raise NotFound("This user does not have a cat!")
+    
+    doc = docs[0]
+    await nrc_ref.document(doc.id).delete()
+
+
+async def update_nr_cat(new_cat_data: NextRoundCatUpdate, user_id: str) -> NextRoundCat:
+    cat_to_update_doc = nrc_ref.document(new_cat_data.id)
+    cat_to_update = await cat_to_update_doc.get()
+
+    if not cat_to_update.exists:
+        raise NotFound("Cat with this id is not found!")
+    
+    cat_to_update_user_id = cat_to_update.to_dict()["user_id"]
+    if cat_to_update_user_id != user_id:
+        raise Exception("This cat is not related to this user!")
+    
+    new_cat_data_dict = new_cat_data.model_dump()
+    await cat_to_update_doc.update(new_cat_data_dict)
+    updated_cat = NextRoundCat(**new_cat_data_dict, user_id=user_id)
+    return updated_cat
 
 
 async def delete_all_cr_cats() -> None:

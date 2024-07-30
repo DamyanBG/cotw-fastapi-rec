@@ -37,6 +37,10 @@ class NextRoundCatWithImage(NextRoundCat, CatImageURL):
     pass
 
 
+class NextRoundCatUpdate(NextRoundCatBase):
+    id: str
+
+
 class CurrentRoundCatBase(BaseCatModel):
     likes: int = 0
     dislikes: int = 0

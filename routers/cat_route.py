@@ -8,11 +8,12 @@ from models.cat_models import (
     NextRoundCatData,
     NextRoundCatCreate,
     NextRoundCatWithImage,
+    NextRoundCatUpdate,
     CurrentRoundCatWithImage,
     CatOfTheWeekWithImage,
 )
 from models.user_models import UserId
-from queries.cat_queries import insert_nrc, select_user_nrc, select_not_voted_cat, select_cat_of_the_week
+from queries.cat_queries import insert_nrc, select_user_nrc, select_not_voted_cat, select_cat_of_the_week, delete_nr_cat, update_nr_cat
 from queries.image_queries import select_image_file_name_by_id
 from queries.vote_queries import select_voted_cats_ids
 from storage.google_cloud_storage import generate_signed_url
@@ -89,3 +90,31 @@ async def get_cat_of_the_week():
     )
     
     return cotw_with_image
+
+
+@cats_router.delete("/delete-cat", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_cat(user_id: UserId = Depends(get_current_user_id)):
+    try:
+        await delete_nr_cat(user_id.id)
+    except NotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.message)
+    
+    return "OK"
+
+
+@cats_router.put("/update-cat", response_model=NextRoundCatWithImage)
+async def update_cat(cat_data: NextRoundCatUpdate, user_id: UserId = Depends(get_current_user_id)):
+    try:
+        updated_cat = await update_nr_cat(cat_data, user_id.id)
+    except NotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.message)
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="This cat is not yours!")
+    
+    cat_image_file_name = await select_image_file_name_by_id(updated_cat.photo_id)
+    cat_image_url = generate_signed_url(cat_image_file_name)
+    updated_cat_with_image = NextRoundCatWithImage(
+        image_url=cat_image_url, **updated_cat.model_dump()
+    )
+
+    return updated_cat_with_image

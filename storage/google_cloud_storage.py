@@ -2,6 +2,7 @@ from uuid import uuid4
 from tempfile import TemporaryDirectory
 from google.cloud.storage import Client
 from google.cloud.storage.blob import Blob
+from google.cloud.exceptions import NotFound
 from datetime import datetime, timedelta, UTC
 
 from sa import credentials
@@ -43,3 +44,13 @@ def generate_signed_url(file_name, expiration_hours=1):
     except Exception as e:
         print(f"Error generating signed URL: {e}")
         return None
+
+
+def delete_blob_by_file_name(file_name: str) -> None:
+    try:
+        bucket = client.bucket(BUCKET_NAME)
+        blob = bucket.blob(file_name)
+        blob.delete()
+        print(f"Deleted {file_name} from storage")
+    except NotFound:
+        print(f"{file_name} not found in storage")

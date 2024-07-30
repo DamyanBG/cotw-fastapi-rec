@@ -19,3 +19,14 @@ async def select_image_file_name_by_id(image_id: str) -> str:
     image_dict = image_doc.to_dict()
     file_name = image_dict["file_name"]
     return file_name
+
+
+async def select_all_images() -> list[Image]:
+    docs = [doc async for doc in image_ref.stream()]
+    images = [Image(id=doc.id, **doc.to_dict()) for doc in docs]
+    return images
+
+
+async def delete_image(image_id: str) -> None:
+    image_doc_ref = image_ref.document(image_id)
+    await image_doc_ref.delete()

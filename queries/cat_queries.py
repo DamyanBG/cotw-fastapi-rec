@@ -160,3 +160,24 @@ async def select_cat_of_the_week() -> CatOfTheWeek:
         id=cat_doc.id, **cat_doc.to_dict()
     )
     return cat_of_the_week
+
+
+async def check_image_relates_to_crc(image_id: str) -> bool:
+    image_id_filter = FieldFilter("photo_id", "==", image_id)
+    query = crc_ref.where(filter=image_id_filter)
+    docs = [doc async for doc in query.stream()]
+    return bool(docs)
+
+
+async def check_image_relates_to_nrc(image_id: str) -> bool:
+    image_id_filter = FieldFilter("photo_id", "==", image_id)
+    query = nrc_ref.where(filter=image_id_filter)
+    docs = [doc async for doc in query.stream()]
+    return bool(docs)
+
+
+async def check_image_relates_to_cotw(image_id: str) -> bool:
+    image_id_filter = FieldFilter("photo_id", "==", image_id)
+    query = cat_of_the_week_ref.where(filter=image_id_filter)
+    docs = [doc async for doc in query.stream()]
+    return bool(docs)
